@@ -48,6 +48,7 @@ export interface CascaderProps {
   checkOnClickNode?: boolean
   checkOnClickLeaf?: boolean
   showPrefix?: boolean
+  parentIndeterminate?: boolean
 }
 
 export interface Tag {

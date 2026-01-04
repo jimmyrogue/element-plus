@@ -96,6 +96,11 @@ export const DefaultProps: CascaderConfig = {
    * @description whether to show the radio or checkbox prefix
    */
   showPrefix: true,
+  /**
+   * @description whether to show parent indeterminate state and enable cascade
+   * selection when checkStrictly and multiple are both true
+   */
+  parentIndeterminate: false,
 }
 
 export const cascaderPanelProps = buildProps({

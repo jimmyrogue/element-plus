@@ -177,12 +177,49 @@ class Node {
       this.loaded && checkedNum !== totalNum && checkedNum > 0
   }
 
+  uncheckDescendants() {
+    this.children.forEach((child) => {
+      if (child) {
+        child.checked = false
+        child.indeterminate = false
+        child.uncheckDescendants()
+      }
+    })
+  }
+
+  emitIndeterminate() {
+    const { parent } = this
+    if (parent) {
+      parent.updateIndeterminate()
+      parent.emitIndeterminate()
+    }
+  }
+
+  updateIndeterminate() {
+    const totalNum = this.children.length
+    if (totalNum === 0) return
+
+    const checkedNum = this.children.reduce((c, p) => {
+      const num = p.checked ? 1 : p.indeterminate ? 0.5 : 0
+      return c + num
+    }, 0)
+
+    this.indeterminate = this.loaded && checkedNum > 0
+  }
+
   doCheck(checked: boolean) {
     if (this.checked === checked) return
 
-    const { checkStrictly, multiple } = this.config
+    const { checkStrictly, multiple, parentIndeterminate } = this.config
 
-    if (checkStrictly || !multiple) {
+    if (checkStrictly && multiple && parentIndeterminate) {
+      this.checked = checked
+      this.indeterminate = false
+      if (!this.isLeaf) {
+        this.uncheckDescendants()
+      }
+      this.emitIndeterminate()
+    } else if (checkStrictly || !multiple) {
       this.checked = checked
     } else {
       // bottom up to unify the calculation of the indeterminate state
